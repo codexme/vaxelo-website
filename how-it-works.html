@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How It Works — Vaxelo AI</title>
+  <meta name="description" content="How Vaxelo AI analyzes any Kalshi market in 10 seconds using 4 specialized AI agents.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--blue:#0070F3;--lime:#B9FF66;--lime-dark:#9FE040;--black:#191A23;--white:#FFFFFF;--gray:#F3F3F3;--muted:#6B7280;--radius:14px;--radius-pill:100px;}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Space Grotesk',sans-serif;background:var(--white);color:var(--black);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    nav{max-width:1200px;margin:0 auto;padding:28px 40px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-size:26px;font-weight:700;color:var(--blue);text-decoration:none;letter-spacing:-1px;}
+    .nav-links{display:flex;align-items:center;gap:4px;list-style:none;}
+    .nav-links a{font-size:15px;color:var(--black);text-decoration:none;padding:8px 16px;border-radius:var(--radius-pill);transition:background 0.15s;font-weight:500;}
+    .nav-links a:hover,.nav-links a.active{background:var(--gray);}
+    .nav-btn{background:var(--black)!important;color:var(--white)!important;border-radius:var(--radius-pill)!important;padding:12px 24px!important;font-weight:600!important;transition:all 0.2s!important;}
+    .nav-btn:hover{background:var(--blue)!important;}
+    .section{max-width:1200px;margin:0 auto;padding:80px 40px;}
+    .pill{display:inline-block;background:var(--black);color:var(--white);padding:8px 20px;border-radius:var(--radius-pill);font-size:15px;font-weight:600;margin-bottom:20px;}
+    .pill.lime{background:var(--lime);color:var(--black);}
+    h1{font-size:clamp(40px,5vw,72px);font-weight:700;letter-spacing:-3px;line-height:1.05;margin-bottom:20px;}
+    h2{font-size:clamp(28px,3vw,44px);font-weight:700;letter-spacing:-2px;margin-bottom:16px;}
+    .lead{font-size:18px;color:var(--muted);line-height:1.65;max-width:560px;margin-bottom:40px;}
+    .page-hero{background:var(--black);padding:80px 40px;text-align:center;}
+    .page-hero h1{color:var(--white);}
+    .page-hero p{color:rgba(255,255,255,0.5);font-size:18px;max-width:540px;margin:0 auto;}
+
+    /* STEPS */
+    .big-steps{display:flex;flex-direction:column;gap:2px;border:2px solid var(--black);border-radius:var(--radius);overflow:hidden;margin-top:60px;}
+    .big-step{display:grid;grid-template-columns:100px 1fr 1fr;border-bottom:2px solid var(--black);transition:background 0.2s;}
+    .big-step:last-child{border-bottom:none;}
+    .big-step:hover{background:var(--gray);}
+    .bs-num{font-size:48px;font-weight:700;color:var(--black);opacity:0.15;padding:36px 24px;border-right:2px solid var(--black);display:flex;align-items:center;justify-content:center;}
+    .bs-left{padding:36px;border-right:2px solid var(--black);}
+    .bs-left h3{font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:8px;}
+    .bs-left p{font-size:14px;color:var(--muted);line-height:1.6;}
+    .bs-right{padding:36px;}
+    .bs-right h4{font-size:13px;font-weight:700;color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+    .detail-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .detail-list li{font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:8px;}
+    .detail-list li::before{content:'→';color:var(--blue);font-weight:700;flex-shrink:0;}
+
+    /* FLOW DIAGRAM */
+    .flow{display:flex;align-items:center;gap:0;margin-top:60px;overflow-x:auto;padding-bottom:8px;}
+    .flow-node{background:var(--black);color:var(--white);border-radius:var(--radius);padding:24px 28px;min-width:180px;text-align:center;flex-shrink:0;}
+    .flow-node.lime{background:var(--lime);color:var(--black);}
+    .flow-node.blue{background:var(--blue);color:var(--white);}
+    .flow-node-icon{font-size:28px;margin-bottom:8px;}
+    .flow-node-name{font-weight:700;font-size:15px;margin-bottom:4px;}
+    .flow-node-desc{font-size:11px;opacity:0.6;}
+    .flow-arrow{font-size:24px;color:var(--muted);padding:0 12px;flex-shrink:0;}
+
+    /* TIMING */
+    .timing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--black);border-radius:var(--radius);border:2px solid var(--black);overflow:hidden;margin-top:60px;}
+    .timing-box{background:var(--white);padding:32px 24px;text-align:center;transition:background 0.2s;}
+    .timing-box:hover{background:var(--lime);}
+    .timing-num{font-size:44px;font-weight:700;letter-spacing:-2px;color:var(--black);margin-bottom:6px;}
+    .timing-num em{color:var(--blue);font-style:normal;}
+    .timing-label{font-size:13px;color:var(--muted);}
+
+    /* FAQ */
+    .faq{display:flex;flex-direction:column;gap:2px;border:2px solid var(--black);border-radius:var(--radius);overflow:hidden;margin-top:60px;}
+    .faq-item{border-bottom:2px solid var(--black);}
+    .faq-item:last-child{border-bottom:none;}
+    .faq-q{padding:24px 28px;font-size:16px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background 0.15s;}
+    .faq-q:hover{background:var(--gray);}
+    .faq-a{padding:0 28px 24px;font-size:14px;color:var(--muted);line-height:1.7;display:none;}
+    .faq-item.open .faq-a{display:block;}
+    .faq-item.open .faq-q{background:var(--lime);}
+    .faq-arrow{transition:transform 0.2s;}
+    .faq-item.open .faq-arrow{transform:rotate(45deg);}
+
+    /* CTA */
+    .cta-box{background:var(--black);border-radius:var(--radius);padding:60px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;border:2px solid var(--black);}
+    .cta-box h2{font-size:36px;font-weight:700;color:var(--white);letter-spacing:-1px;margin-bottom:8px;}
+    .cta-box p{font-size:15px;color:rgba(255,255,255,0.5);}
+    .cta-btn{display:inline-flex;align-items:center;gap:10px;background:var(--lime);color:var(--black);padding:18px 36px;border-radius:var(--radius-pill);font-weight:700;font-size:15px;text-decoration:none;white-space:nowrap;transition:all 0.2s;}
+    .cta-btn:hover{background:var(--lime-dark);transform:translateY(-2px);}
+
+    footer{background:var(--black);padding:48px 40px;}
+    .footer-inner{max-width:1200px;margin:0 auto;}
+    .footer-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:32px;flex-wrap:wrap;gap:20px;}
+    .footer-logo{font-size:24px;font-weight:700;color:var(--white);text-decoration:none;letter-spacing:-1px;}
+    .footer-logo em{color:var(--blue);font-style:normal;}
+    .footer-links{display:flex;gap:8px;list-style:none;flex-wrap:wrap;}
+    .footer-links a{font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;padding:6px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-pill);transition:all 0.15s;}
+    .footer-links a:hover{color:var(--white);border-color:rgba(255,255,255,0.3);}
+    .footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+    .footer-copy{font-size:13px;color:rgba(255,255,255,0.3);}
+    .footer-contact{font-size:13px;color:rgba(255,255,255,0.4);}
+    .footer-contact a{color:var(--lime);text-decoration:none;}
+
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1),transform 0.6s cubic-bezier(0.16,1,0.3,1);}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    @media(max-width:900px){nav{padding:20px 24px;}.nav-links{display:none;}.section{padding:60px 24px;}.big-step{grid-template-columns:60px 1fr;}.bs-right{display:none;}.timing-grid{grid-template-columns:1fr 1fr;}.cta-box{grid-template-columns:1fr;padding:36px 24px;}.flow{gap:0;}.page-hero{padding:60px 24px;}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">VAXELO AI</a>
+  <ul class="nav-links">
+    <li><a href="how-it-works.html" class="active">How It Works</a></li>
+    <li><a href="technology.html">Technology</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="compare.html">Compare</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="https://chromewebstore.google.com/search/vaxelo" target="_blank" class="nav-btn">Get Beta Access ↗</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div style="max-width:1200px;margin:0 auto;padding:0 40px;">
+    <div class="pill lime" style="margin-bottom:20px;">How It Works</div>
+    <h1>From market to signal<br>in 10 seconds.</h1>
+    <p style="margin-top:16px;">No setup. No guessing. Open any Kalshi market and Vaxelo fires 4 AI agents simultaneously to give you one clear signal.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pill reveal">The 4-Step Process</div>
+  <h2 class="reveal">Simple to use.<br>Powerful under the hood.</h2>
+
+  <div class="big-steps">
+    <div class="big-step reveal">
+      <div class="bs-num">01</div>
+      <div class="bs-left">
+        <h3>Install the Extension</h3>
+        <p>One click from Chrome Web Store. Enter your free Groq API key in the Setup tab. You are ready in under 2 minutes.</p>
+      </div>
+      <div class="bs-right">
+        <h4>What You Need</h4>
+        <ul class="detail-list">
+          <li>Google Chrome browser</li>
+          <li>Free Groq API key from console.groq.com</li>
+          <li>A Kalshi account to place trades</li>
+          <li>Optional: Lemon Squeezy license for unlimited signals</li>
+        </ul>
+      </div>
+    </div>
+    <div class="big-step reveal">
+      <div class="bs-num">02</div>
+      <div class="bs-left">
+        <h3>Open Any Kalshi Market</h3>
+        <p>Navigate to any prediction market on Kalshi. The Vaxelo panel appears automatically in the corner of the page — no clicking required.</p>
+      </div>
+      <div class="bs-right">
+        <h4>Supported Markets</h4>
+        <ul class="detail-list">
+          <li>Crypto markets (BTC, ETH, price predictions)</li>
+          <li>Sports markets (game outcomes, scores)</li>
+          <li>Politics markets (elections, policy)</li>
+          <li>Economics markets (rates, GDP, CPI)</li>
+          <li>Any market on Kalshi's platform</li>
+        </ul>
+      </div>
+    </div>
+    <div class="big-step reveal">
+      <div class="bs-num">03</div>
+      <div class="bs-left">
+        <h3>4 AI Brains Fire in Parallel</h3>
+        <p>Reader, Spy, Researcher, and Judge all run simultaneously using Promise.all(). No sequential waiting. Full analysis in under 10 seconds.</p>
+      </div>
+      <div class="bs-right">
+        <h4>What Each Brain Does</h4>
+        <ul class="detail-list">
+          <li>Reader: Scrapes the full Kalshi page in real time</li>
+          <li>Spy: Compares Kalshi vs Polymarket for price gaps</li>
+          <li>Researcher: Hits 15 external sources simultaneously</li>
+          <li>Judge: Weighs all inputs and issues final verdict</li>
+        </ul>
+      </div>
+    </div>
+    <div class="big-step reveal">
+      <div class="bs-num">04</div>
+      <div class="bs-left">
+        <h3>Get Your Signal</h3>
+        <p>BUY YES, BUY NO, or HOLD — with probability estimate, expected value calculation, and Kelly-optimal position size. You make the final call.</p>
+      </div>
+      <div class="bs-right">
+        <h4>What You See</h4>
+        <ul class="detail-list">
+          <li>Signal: BUY YES / BUY NO / HOLD</li>
+          <li>Probability: AI-calculated percentage</li>
+          <li>Expected Value: Is this bet positive EV?</li>
+          <li>Kelly Size: How much of your bankroll to risk</li>
+          <li>Confidence level: How much the 4 brains agree</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="pill reveal">Analysis Flow</div>
+  <h2 class="reveal">How the brains connect.</h2>
+  <div class="flow reveal">
+    <div class="flow-node">
+      <div class="flow-node-icon">🌐</div>
+      <div class="flow-node-name">Kalshi Page</div>
+      <div class="flow-node-desc">You open a market</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node blue">
+      <div class="flow-node-icon">👁</div>
+      <div class="flow-node-name">Reader</div>
+      <div class="flow-node-desc">Scrapes page data</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-icon">🔍</div>
+      <div class="flow-node-name">Spy</div>
+      <div class="flow-node-desc">Cross-checks markets</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-icon">🧠</div>
+      <div class="flow-node-name">Researcher</div>
+      <div class="flow-node-desc">15 live sources</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node lime">
+      <div class="flow-node-icon">⚖️</div>
+      <div class="flow-node-name">Judge</div>
+      <div class="flow-node-desc">Final verdict</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node blue">
+      <div class="flow-node-icon">⚡</div>
+      <div class="flow-node-name">Signal</div>
+      <div class="flow-node-desc">BUY YES / NO / HOLD</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="pill reveal">Performance</div>
+  <h2 class="reveal">Built for speed.</h2>
+  <div class="timing-grid reveal">
+    <div class="timing-box">
+      <div class="timing-num">10<em>s</em></div>
+      <div class="timing-label">Max time to signal</div>
+    </div>
+    <div class="timing-box">
+      <div class="timing-num">4</div>
+      <div class="timing-label">Brains running in parallel</div>
+    </div>
+    <div class="timing-box">
+      <div class="timing-num">&lt;2k</div>
+      <div class="timing-label">Tokens per analysis</div>
+    </div>
+    <div class="timing-box">
+      <div class="timing-num">0</div>
+      <div class="timing-label">Data stored on our servers</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="pill reveal">FAQ</div>
+  <h2 class="reveal">Common questions.</h2>
+  <div class="faq reveal">
+    <div class="faq-item">
+      <div class="faq-q">Do I need a Groq API key? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Yes. Groq provides the AI reasoning layer for Vaxelo. Their API is free to use — go to console.groq.com, create a free account, and generate an API key. It takes under 2 minutes. Your key is stored only on your device and never sent to Vaxelo servers.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Does Vaxelo work on mobile? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Vaxelo is currently a Chrome extension and works on desktop Chrome only. A mobile app is planned for V2.0. In the meantime, use it on any laptop or desktop running Chrome.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How accurate is the signal? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Our target accuracy is 70%. Prediction markets are inherently probabilistic — even the best models are not 100% accurate. Vaxelo is designed to find positive expected value opportunities, not to win every single trade. Always treat signals as one input among many and never risk more than you can afford to lose.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is this financial advice? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">No. Vaxelo AI is an educational and analytical tool only. Nothing produced by Vaxelo constitutes financial advice. We are not registered financial advisors. All trading decisions are yours alone. Past signal accuracy does not guarantee future results. Trade at your own risk.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What markets does Vaxelo work on? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Vaxelo V1.0 works on all markets on Kalshi. Polymarket support is coming in V2.0. The extension detects when you are on a Kalshi market page and activates automatically.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How do I upgrade to unlimited signals? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Click the Vaxelo extension icon in Chrome, go to the Setup tab, and click Upgrade. You will be taken to our Lemon Squeezy checkout. After purchase you will receive a license key by email — paste it in the Setup tab to unlock unlimited signals immediately.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="cta-box reveal">
+    <div>
+      <h2>Ready to try it?</h2>
+      <p>Install in 60 seconds. Free to start. No credit card.</p>
+    </div>
+    <a href="https://chromewebstore.google.com/search/vaxelo" target="_blank" class="cta-btn">Add to Chrome — Free ↗</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <a href="index.html" class="footer-logo">VAXELO <em>AI</em></a>
+      <ul class="footer-links">
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="technology.html">Technology</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="compare.html">Compare</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="https://x.com/VaxeloAI" target="_blank">@VaxeloAI</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Vaxelo AI. Not financial advice.</div>
+      <div class="footer-contact">Contact: <a href="mailto:hello@vaxelo.xyz">hello@vaxelo.xyz</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const obs=new IntersectionObserver(entries=>{entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*80);});},{threshold:0.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+  document.querySelectorAll('.faq-q').forEach(q=>{q.addEventListener('click',()=>{q.parentElement.classList.toggle('open');});});
+</script>
+</body>
+</html>

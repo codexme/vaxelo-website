@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technology — Vaxelo AI</title>
+  <meta name="description" content="The 4 AI brains behind Vaxelo AI. How Reader, Spy, Researcher, and Judge work together to find edge in prediction markets.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--blue:#0070F3;--lime:#B9FF66;--lime-dark:#9FE040;--black:#191A23;--white:#FFFFFF;--gray:#F3F3F3;--muted:#6B7280;--radius:14px;--radius-pill:100px;}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+    body{font-family:'Space Grotesk',sans-serif;background:var(--white);color:var(--black);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    nav{max-width:1200px;margin:0 auto;padding:28px 40px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-size:26px;font-weight:700;color:var(--blue);text-decoration:none;letter-spacing:-1px;}
+    .nav-links{display:flex;align-items:center;gap:4px;list-style:none;}
+    .nav-links a{font-size:15px;color:var(--black);text-decoration:none;padding:8px 16px;border-radius:var(--radius-pill);transition:background 0.15s;font-weight:500;}
+    .nav-links a:hover,.nav-links a.active{background:var(--gray);}
+    .nav-btn{background:var(--black)!important;color:var(--white)!important;border-radius:var(--radius-pill)!important;padding:12px 24px!important;font-weight:600!important;transition:all 0.2s!important;}
+    .nav-btn:hover{background:var(--blue)!important;}
+    .section{max-width:1200px;margin:0 auto;padding:80px 40px;}
+    .pill{display:inline-block;background:var(--black);color:var(--white);padding:8px 20px;border-radius:var(--radius-pill);font-size:15px;font-weight:600;margin-bottom:20px;}
+    .pill.lime{background:var(--lime);color:var(--black);}
+    h1{font-size:clamp(40px,5vw,72px);font-weight:700;letter-spacing:-3px;line-height:1.05;margin-bottom:20px;}
+    h2{font-size:clamp(28px,3vw,44px);font-weight:700;letter-spacing:-2px;margin-bottom:16px;}
+    .page-hero{background:var(--black);padding:80px 40px;text-align:center;}
+    .page-hero h1{color:var(--white);}
+    .page-hero p{color:rgba(255,255,255,0.5);font-size:18px;max-width:540px;margin:16px auto 0;}
+
+    .brain-section{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--black);border-radius:var(--radius);border:2px solid var(--black);overflow:hidden;margin-top:60px;}
+    .brain-main{padding:48px;background:var(--black);color:var(--white);}
+    .brain-main.lime{background:var(--lime);color:var(--black);}
+    .brain-main.white{background:var(--white);color:var(--black);}
+    .brain-details{padding:48px;background:var(--white);}
+    .brain-details.gray{background:var(--gray);}
+    .brain-num{font-family:'Space Mono',monospace;font-size:11px;opacity:0.4;letter-spacing:2px;margin-bottom:16px;}
+    .brain-icon{font-size:48px;margin-bottom:16px;}
+    .brain-name{font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:12px;}
+    .brain-desc{font-size:15px;line-height:1.7;opacity:0.75;}
+    .brain-tag{display:inline-block;padding:6px 14px;border-radius:var(--radius-pill);font-size:12px;font-weight:600;margin-top:20px;}
+    .brain-main .brain-tag{background:rgba(255,255,255,0.1);color:var(--white);}
+    .brain-main.lime .brain-tag{background:rgba(0,0,0,0.12);color:var(--black);}
+    .brain-main.white .brain-tag{background:var(--black);color:var(--white);}
+    .detail-title{font-size:13px;font-weight:700;color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;}
+    .detail-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
+    .detail-list li{font-size:14px;color:var(--muted);display:flex;gap:8px;line-height:1.5;}
+    .detail-list li::before{content:'→';color:var(--blue);font-weight:700;flex-shrink:0;}
+    .detail-tag{display:inline-block;background:var(--gray);color:var(--muted);padding:3px 10px;border-radius:var(--radius-pill);font-size:11px;font-weight:600;margin:2px;}
+
+    .sources-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--black);border-radius:var(--radius);border:2px solid var(--black);overflow:hidden;margin-top:60px;}
+    .source-box{background:var(--white);padding:24px;text-align:center;transition:background 0.2s;}
+    .source-box:hover{background:var(--lime);}
+    .source-icon{font-size:28px;margin-bottom:8px;}
+    .source-name{font-weight:700;font-size:14px;margin-bottom:4px;}
+    .source-type{font-size:11px;color:var(--muted);}
+
+    .judge-section{background:var(--black);border-radius:var(--radius);border:2px solid var(--black);overflow:hidden;margin-top:60px;}
+    .judge-header{padding:40px 48px;border-bottom:2px solid rgba(255,255,255,0.1);}
+    .judge-header h3{font-size:28px;font-weight:700;color:var(--white);letter-spacing:-1px;margin-bottom:8px;}
+    .judge-header p{font-size:15px;color:rgba(255,255,255,0.5);}
+    .weight-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;}
+    .weight-item{padding:32px 24px;border-right:2px solid rgba(255,255,255,0.08);text-align:center;}
+    .weight-item:last-child{border-right:none;}
+    .weight-pct{font-size:44px;font-weight:700;letter-spacing:-2px;color:var(--lime);margin-bottom:6px;}
+    .weight-name{font-size:13px;color:rgba(255,255,255,0.5);}
+
+    .cta-box{background:var(--black);border-radius:var(--radius);padding:60px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;border:2px solid var(--black);}
+    .cta-box h2{font-size:36px;font-weight:700;color:var(--white);letter-spacing:-1px;margin-bottom:8px;}
+    .cta-box p{font-size:15px;color:rgba(255,255,255,0.5);}
+    .cta-btn{display:inline-flex;align-items:center;gap:10px;background:var(--lime);color:var(--black);padding:18px 36px;border-radius:var(--radius-pill);font-weight:700;font-size:15px;text-decoration:none;white-space:nowrap;transition:all 0.2s;}
+    .cta-btn:hover{background:var(--lime-dark);transform:translateY(-2px);}
+
+    footer{background:var(--black);padding:48px 40px;}
+    .footer-inner{max-width:1200px;margin:0 auto;}
+    .footer-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:32px;flex-wrap:wrap;gap:20px;}
+    .footer-logo{font-size:24px;font-weight:700;color:var(--white);text-decoration:none;letter-spacing:-1px;}
+    .footer-logo em{color:var(--blue);font-style:normal;}
+    .footer-links{display:flex;gap:8px;list-style:none;flex-wrap:wrap;}
+    .footer-links a{font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;padding:6px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-pill);transition:all 0.15s;}
+    .footer-links a:hover{color:var(--white);border-color:rgba(255,255,255,0.3);}
+    .footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+    .footer-copy{font-size:13px;color:rgba(255,255,255,0.3);}
+    .footer-contact a{color:var(--lime);text-decoration:none;font-size:13px;}
+
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1),transform 0.6s cubic-bezier(0.16,1,0.3,1);}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    @media(max-width:900px){nav{padding:20px 24px;}.nav-links{display:none;}.section{padding:60px 24px;}.brain-section{grid-template-columns:1fr;}.sources-grid{grid-template-columns:1fr 1fr;}.weight-grid{grid-template-columns:1fr 1fr;}.cta-box{grid-template-columns:1fr;padding:36px 24px;}.page-hero{padding:60px 24px;}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">VAXELO AI</a>
+  <ul class="nav-links">
+    <li><a href="how-it-works.html">How It Works</a></li>
+    <li><a href="technology.html" class="active">Technology</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="compare.html">Compare</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="https://chromewebstore.google.com/search/vaxelo" target="_blank" class="nav-btn">Get Beta Access ↗</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div style="max-width:1200px;margin:0 auto;padding:0 40px;">
+    <div class="pill lime">Technology</div>
+    <h1>4 brains.<br>One signal.</h1>
+    <p>Each brain is a specialist. Together they see angles no single AI model can.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pill reveal">Brain 01</div>
+  <div class="brain-section reveal">
+    <div class="brain-main">
+      <div class="brain-num">BRAIN 01 / 04</div>
+      <div class="brain-icon">👁</div>
+      <div class="brain-name">Reader</div>
+      <div class="brain-desc">Scrapes the entire Kalshi market page in real time. Captures every data point visible to a human trader — and some they would miss.</div>
+      <div class="brain-tag">DOM INTELLIGENCE</div>
+    </div>
+    <div class="brain-details">
+      <div class="detail-title">What Reader Captures</div>
+      <ul class="detail-list">
+        <li>Current YES and NO prices and spreads</li>
+        <li>Full orderbook depth — how much money is on each side</li>
+        <li>Recent trade flow — who is buying and selling</li>
+        <li>All public comments on the market page</li>
+        <li>Market title, category, and time remaining</li>
+        <li>Historical chart data and recent price movement</li>
+      </ul>
+      <div class="detail-title">Technologies Used</div>
+      <div>
+        <span class="detail-tag">Chrome DOM API</span>
+        <span class="detail-tag">MutationObserver</span>
+        <span class="detail-tag">Kalshi REST API</span>
+        <span class="detail-tag">RSA-PSS Auth</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="pill reveal">Brain 02</div>
+  <div class="brain-section reveal">
+    <div class="brain-details gray">
+      <div class="detail-title">What Spy Detects</div>
+      <ul class="detail-list">
+        <li>Same event price on Polymarket vs Kalshi</li>
+        <li>Price gaps over 10% flagged as potential edge</li>
+        <li>Gaps over 20% flagged as strong arbitrage signal</li>
+        <li>Bookmaker consensus for sports markets</li>
+        <li>News sentiment from Google News and Reddit</li>
+        <li>DuckDuckGo and Brave search for recent events</li>
+      </ul>
+      <div class="detail-title">Technologies Used</div>
+      <div>
+        <span class="detail-tag">Polymarket API</span>
+        <span class="detail-tag">The Odds API</span>
+        <span class="detail-tag">Google News RSS</span>
+        <span class="detail-tag">DuckDuckGo</span>
+      </div>
+    </div>
+    <div class="brain-main lime">
+      <div class="brain-num">BRAIN 02 / 04</div>
+      <div class="brain-icon">🔍</div>
+      <div class="brain-name">Spy</div>
+      <div class="brain-desc">Compares Kalshi vs Polymarket on the same event. When prices diverge significantly — that gap is mathematical edge, not guesswork.</div>
+      <div class="brain-tag">ARBITRAGE DETECTION</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="pill reveal">Brain 03</div>
+  <div class="brain-section reveal">
+    <div class="brain-main white">
+      <div class="brain-num">BRAIN 03 / 04</div>
+      <div class="brain-icon">🧠</div>
+      <div class="brain-name">Researcher</div>
+      <div class="brain-desc">Hits 15 real-time sources simultaneously. Finds context, news, and facts that the market has not yet priced in.</div>
+      <div class="brain-tag">WEB INTELLIGENCE</div>
+    </div>
+    <div class="brain-details">
+      <div class="detail-title">15 Live Data Sources</div>
+      <ul class="detail-list">
+        <li>DuckDuckGo — general web search</li>
+        <li>Wikipedia — factual background context</li>
+        <li>Google News RSS — breaking news in real time</li>
+        <li>Reddit — community sentiment and insider info</li>
+        <li>Brave Search — independent web index</li>
+        <li>CoinGecko — crypto price data</li>
+        <li>Alternative.me Fear & Greed Index</li>
+        <li>Binance — spot and futures data</li>
+        <li>Polymarket — cross-platform consensus</li>
+        <li>Plus 6 more specialized sources by category</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="pill reveal">Brain 04</div>
+  <div class="brain-section reveal">
+    <div class="brain-details gray">
+      <div class="detail-title">How Judge Decides</div>
+      <ul class="detail-list">
+        <li>Receives structured output from all 3 brains</li>
+        <li>Runs Groq AI reasoning with llama-3.3-70b-versatile</li>
+        <li>Applies weighted ensemble scoring</li>
+        <li>Calculates true probability estimate</li>
+        <li>Computes expected value: (prob × payout) - cost</li>
+        <li>Applies Kelly Criterion for position sizing</li>
+        <li>Issues final BUY YES / BUY NO / HOLD with confidence</li>
+      </ul>
+      <div class="detail-title">Guardrails</div>
+      <ul class="detail-list">
+        <li>Blocks signals below 55% confidence — shows HOLD instead</li>
+        <li>Warns when market closes in under 1 hour</li>
+        <li>Requires at least 2 of 3 brains to agree</li>
+      </ul>
+    </div>
+    <div class="brain-main">
+      <div class="brain-num">BRAIN 04 / 04</div>
+      <div class="brain-icon">⚖️</div>
+      <div class="brain-name">Judge</div>
+      <div class="brain-desc">The final decision engine. Weighs all brain outputs, applies Groq AI reasoning, and calculates the mathematically optimal bet.</div>
+      <div class="brain-tag">FINAL VERDICT</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="pill reveal">Judge Weights</div>
+  <h2 class="reveal">How Judge weights each brain.</h2>
+  <div class="judge-section reveal">
+    <div class="judge-header">
+      <h3>Weighted Ensemble Scoring</h3>
+      <p>Each brain contributes to the final signal based on its reliability for that market type.</p>
+    </div>
+    <div class="weight-grid">
+      <div class="weight-item">
+        <div class="weight-pct">30%</div>
+        <div class="weight-name">Reader — Page data</div>
+      </div>
+      <div class="weight-item">
+        <div class="weight-pct">40%</div>
+        <div class="weight-name">Spy — Arbitrage gap</div>
+      </div>
+      <div class="weight-item">
+        <div class="weight-pct">20%</div>
+        <div class="weight-name">Researcher — Web intel</div>
+      </div>
+      <div class="weight-item">
+        <div class="weight-pct">10%</div>
+        <div class="weight-name">Groq AI — Reasoning</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="pill reveal">Data Sources</div>
+  <h2 class="reveal">15+ real-time sources.</h2>
+  <div class="sources-grid reveal">
+    <div class="source-box"><div class="source-icon">🔍</div><div class="source-name">DuckDuckGo</div><div class="source-type">Web Search</div></div>
+    <div class="source-box"><div class="source-icon">📖</div><div class="source-name">Wikipedia</div><div class="source-type">Facts</div></div>
+    <div class="source-box"><div class="source-icon">📰</div><div class="source-name">Google News</div><div class="source-type">Breaking News</div></div>
+    <div class="source-box"><div class="source-icon">💬</div><div class="source-name">Reddit</div><div class="source-type">Community</div></div>
+    <div class="source-box"><div class="source-icon">🦁</div><div class="source-name">Brave Search</div><div class="source-type">Web Index</div></div>
+    <div class="source-box"><div class="source-icon">🪙</div><div class="source-name">CoinGecko</div><div class="source-type">Crypto Prices</div></div>
+    <div class="source-box"><div class="source-icon">😨</div><div class="source-name">Fear & Greed</div><div class="source-type">Crypto Sentiment</div></div>
+    <div class="source-box"><div class="source-icon">📈</div><div class="source-name">Binance</div><div class="source-type">Futures Data</div></div>
+    <div class="source-box"><div class="source-icon">🌐</div><div class="source-name">Polymarket</div><div class="source-type">Cross-Platform</div></div>
+    <div class="source-box"><div class="source-icon">🏆</div><div class="source-name">The Odds API</div><div class="source-type">Sports Books</div></div>
+    <div class="source-box"><div class="source-icon">🤖</div><div class="source-name">Groq AI</div><div class="source-type">LLM Reasoning</div></div>
+    <div class="source-box"><div class="source-icon">📊</div><div class="source-name">Kalshi API</div><div class="source-type">Market Data</div></div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0;">
+  <div class="cta-box reveal">
+    <div>
+      <h2>See it in action.</h2>
+      <p>Install free. Open any Kalshi market. Get your first signal in 10 seconds.</p>
+    </div>
+    <a href="https://chromewebstore.google.com/search/vaxelo" target="_blank" class="cta-btn">Add to Chrome — Free ↗</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <a href="index.html" class="footer-logo">VAXELO <em>AI</em></a>
+      <ul class="footer-links">
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="technology.html">Technology</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="compare.html">Compare</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="https://x.com/VaxeloAI" target="_blank">@VaxeloAI</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Vaxelo AI. Not financial advice.</div>
+      <a href="mailto:hello@vaxelo.xyz" class="footer-contact">hello@vaxelo.xyz</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const obs=new IntersectionObserver(entries=>{entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*80);});},{threshold:0.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
