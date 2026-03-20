@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorry to see you go — Vaxelo AI</title>
+  <meta name="description" content="You've uninstalled the Vaxelo AI extension. Help us improve by sharing why.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--blue:#0070F3;--lime:#B9FF66;--lime-dark:#9FE040;--black:#191A23;--white:#FFFFFF;--gray:#F3F3F3;--muted:#6B7280;--radius:14px;--radius-pill:100px;}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+    body{font-family:'Space Grotesk',sans-serif;background:var(--white);color:var(--black);overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+
+    /* Minimal header */
+    .top-bar{background:var(--black);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-size:22px;font-weight:700;color:var(--white);text-decoration:none;letter-spacing:-1px;}
+    .logo em{color:var(--blue);font-style:normal;}
+    .reinstall-btn{display:inline-flex;align-items:center;gap:8px;background:var(--lime);color:var(--black);padding:10px 22px;border-radius:var(--radius-pill);font-weight:700;font-size:14px;text-decoration:none;transition:all 0.2s;}
+    .reinstall-btn:hover{background:var(--lime-dark);transform:translateY(-1px);}
+
+    /* Hero */
+    .hero{text-align:center;padding:60px 40px 40px;max-width:640px;margin:0 auto;}
+    .hero-emoji{font-size:56px;margin-bottom:24px;display:block;}
+    .hero h1{font-size:clamp(32px,4vw,52px);font-weight:700;letter-spacing:-2px;line-height:1.1;margin-bottom:16px;}
+    .hero h1 em{color:var(--blue);font-style:normal;}
+    .hero p{font-size:17px;color:var(--muted);line-height:1.7;margin-bottom:32px;}
+
+    /* Comeback offer banner */
+    .offer-banner{max-width:800px;margin:0 auto 56px;background:var(--lime);border-radius:var(--radius);border:2px solid var(--black);padding:28px 36px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+    .offer-text .offer-label{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.5);margin-bottom:4px;}
+    .offer-text strong{font-size:18px;font-weight:700;color:var(--black);}
+    .offer-text p{font-size:14px;color:rgba(0,0,0,0.6);margin-top:4px;}
+
+    /* Main layout */
+    main{flex:1;padding:0 40px 80px;}
+    .inner{max-width:800px;margin:0 auto;}
+
+    /* Reasons checklist */
+    .reasons-section{margin-bottom:48px;}
+    .reasons-section h2{font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:20px;}
+    .reasons-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+    .reason-chip{display:flex;align-items:center;gap:12px;padding:16px 18px;border:2px solid var(--gray);border-radius:var(--radius);cursor:pointer;transition:border-color 0.15s,background 0.15s;user-select:none;}
+    .reason-chip:hover{border-color:var(--black);}
+    .reason-chip.selected{border-color:var(--black);background:var(--gray);}
+    .reason-chip input[type=checkbox]{width:18px;height:18px;accent-color:var(--black);cursor:pointer;flex-shrink:0;}
+    .reason-chip span{font-size:14px;font-weight:500;}
+
+    /* Feedback form card */
+    .form-card{background:var(--white);border:2px solid var(--black);border-radius:var(--radius);padding:40px;}
+    .form-field{display:flex;flex-direction:column;gap:6px;margin-bottom:20px;}
+    .form-field label{font-size:13px;font-weight:600;color:var(--black);letter-spacing:0.3px;}
+    .form-field input,
+    .form-field select,
+    .form-field textarea{font-family:'Space Grotesk',sans-serif;font-size:15px;color:var(--black);background:var(--gray);border:2px solid transparent;border-radius:var(--radius);padding:14px 16px;width:100%;transition:border-color 0.15s,background 0.15s;outline:none;appearance:none;-webkit-appearance:none;}
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus{background:var(--white);border-color:var(--black);}
+    .form-field textarea{resize:vertical;min-height:120px;}
+    .form-field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23191A23' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px;}
+    .form-submit{display:block;width:100%;padding:16px;border-radius:var(--radius-pill);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;background:var(--black);color:var(--white);border:2px solid var(--black);cursor:pointer;transition:all 0.2s;}
+    .form-submit:hover{background:var(--blue);border-color:var(--blue);}
+    .form-note{font-size:12px;color:var(--muted);text-align:center;margin-top:14px;}
+
+    /* Success state */
+    .form-success{display:none;text-align:center;padding:40px 20px;}
+    .form-success .success-icon{font-size:48px;margin-bottom:16px;}
+    .form-success h3{font-size:22px;font-weight:700;margin-bottom:8px;}
+    .form-success p{font-size:15px;color:var(--muted);margin-bottom:24px;}
+    .success-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+    .success-link-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:var(--radius-pill);font-weight:600;font-size:14px;text-decoration:none;border:2px solid var(--black);transition:all 0.2s;}
+    .success-link-btn.dark{background:var(--black);color:var(--white);}
+    .success-link-btn.dark:hover{background:var(--blue);border-color:var(--blue);}
+    .success-link-btn.light{background:var(--white);color:var(--black);}
+    .success-link-btn.light:hover{background:var(--gray);}
+
+    /* Footer */
+    footer{background:var(--black);padding:32px 40px;}
+    .footer-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+    .footer-copy{font-size:13px;color:rgba(255,255,255,0.3);}
+    .footer-links{display:flex;gap:8px;list-style:none;flex-wrap:wrap;}
+    .footer-links a{font-size:13px;color:rgba(255,255,255,0.5);text-decoration:none;padding:4px 10px;border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-pill);transition:all 0.15s;}
+    .footer-links a:hover{color:var(--white);border-color:rgba(255,255,255,0.3);}
+
+    @media(max-width:700px){
+      .top-bar{padding:16px 20px;}
+      .hero{padding:40px 20px 28px;}
+      .offer-banner{padding:20px 24px;}
+      main{padding:0 20px 60px;}
+      .reasons-grid{grid-template-columns:1fr;}
+      .form-card{padding:24px 16px;}
+      footer{padding:28px 20px;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="index.html" class="logo">VAXELO <em>AI</em></a>
+  <a href="https://chromewebstore.google.com/search/vaxelo" target="_blank" rel="noopener noreferrer" class="reinstall-btn">↩ Reinstall Extension</a>
+</div>
+
+<div class="hero">
+  <span class="hero-emoji">😢</span>
+  <h1>Sorry to see you <em>go.</em></h1>
+  <p>You've removed the Vaxelo AI extension. It takes less than 60 seconds to share why — your feedback directly shapes the next version.</p>
+</div>
+
+<div class="offer-banner">
+  <div class="offer-text">
+    <div class="offer-label">Before you leave</div>
+    <strong>Changed your mind? Reinstall takes 10 seconds.</strong>
+    <p>Your account and signal history are still intact — just reinstall and pick up where you left off.</p>
+  </div>
+  <a href="https://chromewebstore.google.com/search/vaxelo" target="_blank" rel="noopener noreferrer" class="reinstall-btn" style="white-space:nowrap;">Reinstall Free ↗</a>
+</div>
+
+<main>
+  <div class="inner">
+
+    <!-- Reasons checkboxes -->
+    <div class="reasons-section">
+      <h2>Why did you uninstall? <span style="font-size:14px;font-weight:400;color:var(--muted);">(select all that apply)</span></h2>
+      <div class="reasons-grid" id="reasons-grid">
+        <label class="reason-chip">
+          <input type="checkbox" name="reasons" value="It didn't work as expected">
+          <span>It didn't work as expected</span>
+        </label>
+        <label class="reason-chip">
+          <input type="checkbox" name="reasons" value="Signals weren't accurate enough">
+          <span>Signals weren't accurate enough</span>
+        </label>
+        <label class="reason-chip">
+          <input type="checkbox" name="reasons" value="Too expensive">
+          <span>Too expensive</span>
+        </label>
+        <label class="reason-chip">
+          <input type="checkbox" name="reasons" value="I stopped trading prediction markets">
+          <span>I stopped trading prediction markets</span>
+        </label>
+        <label class="reason-chip">
+          <input type="checkbox" name="reasons" value="Missing features I need">
+          <span>Missing features I need</span>
+        </label>
+        <label class="reason-chip">
+          <input type="checkbox" name="reasons" value="Too slow / performance issues">
+          <span>Too slow / performance issues</span>
+        </label>
+        <label class="reason-chip">
+          <input type="checkbox" name="reasons" value="Privacy or data concerns">
+          <span>Privacy or data concerns</span>
+        </label>
+        <label class="reason-chip">
+          <input type="checkbox" name="reasons" value="Just trying it out, may return">
+          <span>Just trying it out, may return</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Feedback form -->
+    <div class="form-card">
+      <!-- Replace the action URL with your Formspree form endpoint, e.g. https://formspree.io/f/YOUR_FORM_ID -->
+      <form id="uninstall-form" action="https://formspree.io/f/hello@vaxelo.xyz" method="POST" novalidate>
+        <input type="hidden" name="form_type" value="uninstall_feedback">
+        <input type="hidden" name="reasons_selected" id="hidden-reasons" value="">
+
+        <div class="form-field">
+          <label for="feedback-improve">What could we do better? <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+          <textarea id="feedback-improve" name="improvement_suggestions" placeholder="Be brutally honest — every word helps us build a better product…"></textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="feedback-return">Would you come back? <span style="color:var(--blue)">*</span></label>
+          <select id="feedback-return" name="would_return" required>
+            <option value="" disabled selected>Select an answer…</option>
+            <option value="Yes, definitely">Yes, definitely</option>
+            <option value="Yes, if you fixed specific things">Yes, if you fixed specific things</option>
+            <option value="Maybe in the future">Maybe in the future</option>
+            <option value="Probably not">Probably not</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="feedback-email">Email <span style="color:var(--muted);font-weight:400;">(optional — only if you'd like a reply)</span></label>
+          <input type="email" id="feedback-email" name="email" placeholder="you@example.com">
+        </div>
+
+        <button type="submit" class="form-submit">Send Feedback →</button>
+        <p class="form-note">Takes 30 seconds. Your feedback goes directly to the founder.</p>
+      </form>
+
+      <div class="form-success" id="uninstall-success">
+        <div class="success-icon">🙏</div>
+        <h3>Thank you for the feedback!</h3>
+        <p>We genuinely read every response. You've helped make Vaxelo better for the next person who tries it.</p>
+        <div class="success-links">
+          <a href="https://chromewebstore.google.com/search/vaxelo" target="_blank" rel="noopener noreferrer" class="success-link-btn dark">↩ Reinstall Vaxelo</a>
+          <a href="index.html" class="success-link-btn light">Back to vaxelo.xyz</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-copy">© 2026 Vaxelo AI. Not financial advice.</div>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="privacy.html">Privacy</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+  // Highlight selected reason chips
+  document.querySelectorAll('.reason-chip input[type=checkbox]').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      cb.closest('.reason-chip').classList.toggle('selected',cb.checked);
+      const checked=[...document.querySelectorAll('.reason-chip input:checked')].map(c=>c.value);
+      document.getElementById('hidden-reasons').value=checked.join('; ');
+    });
+  });
+
+  // Form submission with success state
+  const form=document.getElementById('uninstall-form');
+  form.addEventListener('submit',async(e)=>{
+    e.preventDefault();
+    const btn=form.querySelector('.form-submit');
+    btn.textContent='Sending…';
+    btn.disabled=true;
+    try{
+      const res=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
+      if(res.ok){
+        form.style.display='none';
+        document.getElementById('uninstall-success').style.display='block';
+      } else {
+        btn.textContent='Try again';
+        btn.disabled=false;
+      }
+    } catch(err){
+      btn.textContent='Try again';
+      btn.disabled=false;
+    }
+  });
+</script>
+</body>
+</html>
