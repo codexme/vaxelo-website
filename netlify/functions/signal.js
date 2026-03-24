@@ -15,7 +15,7 @@ const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 // Basic per-IP request throttle (in-memory, resets on cold start)
 const _ipTimestamps = new Map();
 const IP_WINDOW_MS = 60_000;
-const IP_MAX_RPM = 20; // 20 req/min per IP
+const IP_MAX_RPM = 20;
 
 function isRateLimited(ip) {
   const now = Date.now();
@@ -26,120 +26,93 @@ function isRateLimited(ip) {
   return false;
 }
 
-exports.handler = async (event) => {
-  // CORS headers — only allow the extension origin
+async function callGroq(groqApiKey, model, messages) {
+  const res = await fetch(GROQ_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${groqApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      max_tokens: MAX_TOKENS,
+      temperature: 0.1,
+      response_format: { type: 'json_object' },
+    }),
+  });
+  return res;
+}
+
+export async function handler(event) {
   const headers = {
-    'Access-Control-Allow-Origin': '*', // extension has no fixed origin
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json'
   };
 
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers, body: '' };
   }
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method Not Allowed' }) };
-  }
-
-  // Per-IP throttle
-  const clientIp = event.headers?.['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
-  if (isRateLimited(clientIp)) {
-    return {
-      statusCode: 429, headers,
-      body: JSON.stringify({ error: 'Too many requests — slow down' })
-    };
-  }
-
-  // Parse request body
-  let body;
   try {
-    body = JSON.parse(event.body || '{}');
-  } catch {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) };
-  }
+    if (event.httpMethod !== 'POST') {
+      return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method Not Allowed' }) };
+    }
 
-  const { messages, model, licenseKey, extensionId } = body;
+    // Per-IP throttle
+    const clientIp = event.headers?.['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
+    if (isRateLimited(clientIp)) {
+      return { statusCode: 429, headers, body: JSON.stringify({ error: 'Rate limited — try again in a moment' }) };
+    }
 
-  // Validate messages
-  if (!messages || !Array.isArray(messages) || messages.length === 0) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'messages array required' }) };
-  }
+    // Parse body
+    const body = JSON.parse(event.body || '{}');
+    const { messages, model } = body;
 
-  // Server-side Groq API key — never exposed to extension
-  const groqApiKey = process.env.GROQ_API_KEY;
-  if (!groqApiKey) {
-    console.error('[Signal] GROQ_API_KEY not set in environment');
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Server configuration error' }) };
-  }
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'messages array required' }) };
+    }
 
-  const selectedModel = (typeof model === 'string' && model.length < 100) ? model : PROXY_MODEL;
+    const groqApiKey = process.env.GROQ_API_KEY;
+    if (!groqApiKey) {
+      console.error('[Signal] GROQ_API_KEY not configured');
+      return { statusCode: 500, headers, body: JSON.stringify({ error: 'Server configuration error' }) };
+    }
 
-  // Call Groq
-  try {
-    const groqRes = await fetch(GROQ_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${groqApiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: selectedModel,
-        messages,
-        max_tokens: MAX_TOKENS,
-        temperature: 0.1,
-        response_format: { type: 'json_object' }
-      })
-    });
+    const selectedModel = (typeof model === 'string' && model.length < 100) ? model : PROXY_MODEL;
+
+    // Primary Groq call
+    let groqRes = await callGroq(groqApiKey, selectedModel, messages);
+
+    // 429 from Groq — surface it directly, don't retry
+    if (groqRes.status === 429) {
+      return { statusCode: 429, headers, body: JSON.stringify({ error: 'Rate limited — try again in a moment' }) };
+    }
+
+    // Model not found — retry once with fallback model
+    if ((groqRes.status === 400 || groqRes.status === 404) && selectedModel !== FALLBACK_MODEL) {
+      console.warn(`[Signal] ${selectedModel} unavailable, retrying with ${FALLBACK_MODEL}`);
+      groqRes = await callGroq(groqApiKey, FALLBACK_MODEL, messages);
+      if (groqRes.status === 429) {
+        return { statusCode: 429, headers, body: JSON.stringify({ error: 'Rate limited — try again in a moment' }) };
+      }
+    }
 
     const data = await groqRes.json();
 
     if (!groqRes.ok) {
-      // If model not found, retry with fallback
-      if (groqRes.status === 404 || groqRes.status === 400) {
-        const fallbackRes = await fetch(GROQ_URL, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${groqApiKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: FALLBACK_MODEL,
-            messages,
-            max_tokens: MAX_TOKENS,
-            temperature: 0.1,
-            response_format: { type: 'json_object' }
-          })
-        });
-        const fallbackData = await fallbackRes.json();
-        if (!fallbackRes.ok) {
-          return {
-            statusCode: 502, headers,
-            body: JSON.stringify({ error: fallbackData?.error?.message || 'Groq API error' })
-          };
-        }
-        return {
-          statusCode: 200, headers,
-          body: JSON.stringify({ ok: true, data: fallbackData, model: FALLBACK_MODEL })
-        };
-      }
-
       const errMsg = data?.error?.message || `Groq returned HTTP ${groqRes.status}`;
       console.error('[Signal] Groq error:', errMsg);
       return { statusCode: 502, headers, body: JSON.stringify({ error: errMsg }) };
     }
 
-    return {
-      statusCode: 200, headers,
-      body: JSON.stringify({ ok: true, data, model: selectedModel })
-    };
+    return { statusCode: 200, headers, body: JSON.stringify({ data }) };
 
   } catch (err) {
-    console.error('[Signal] Network error calling Groq:', err.message);
-    return {
-      statusCode: 503, headers,
-      body: JSON.stringify({ error: 'Proxy network error — try again shortly' })
-    };
+    // Single catch-all — prevents Netlify/Cloudflare from returning an HTML 502
+    console.error('[Signal] Unhandled error:', err.message);
+    return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
   }
-};
+}
