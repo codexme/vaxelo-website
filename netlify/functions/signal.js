@@ -10,7 +10,7 @@
 const PROXY_MODEL = 'llama-3.3-70b-versatile';
 const FALLBACK_MODEL = 'llama-3.1-8b-instant';
 const MAX_TOKENS = 600;
-const GROQ_TIMEOUT_MS = 15000;
+const GROQ_TIMEOUT_MS = 8000; // must stay under Netlify's 10s function limit
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 // Basic per-IP request throttle (in-memory, resets on cold start)
