@@ -10,6 +10,7 @@
 const PROXY_MODEL = 'llama-3.3-70b-versatile';
 const FALLBACK_MODEL = 'llama-3.1-8b-instant';
 const MAX_TOKENS = 600;
+const GROQ_TIMEOUT_MS = 15000;
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 // Basic per-IP request throttle (in-memory, resets on cold start)
@@ -27,12 +28,15 @@ function isRateLimited(ip) {
 }
 
 async function callGroq(groqApiKey, model, messages) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), GROQ_TIMEOUT_MS);
   const res = await fetch(GROQ_URL, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${groqApiKey}`,
       'Content-Type': 'application/json',
     },
+    signal: controller.signal,
     body: JSON.stringify({
       model,
       messages,
@@ -41,7 +45,18 @@ async function callGroq(groqApiKey, model, messages) {
       response_format: { type: 'json_object' },
     }),
   });
+  clearTimeout(timeout);
   return res;
+}
+
+async function safeJson(res) {
+  const text = await res.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { raw: text };
+  }
 }
 
 exports.handler = async (event) => {
@@ -70,6 +85,15 @@ exports.handler = async (event) => {
     // Parse body
     const body = JSON.parse(event.body || '{}');
     const { messages, model } = body;
+
+    // Local probe endpoint to validate function execution without hitting Groq.
+    if (body.healthcheck === true) {
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ ok: true, service: 'signal-proxy', ts: Date.now() })
+      };
+    }
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'messages array required' }) };
@@ -100,7 +124,7 @@ exports.handler = async (event) => {
       }
     }
 
-    const data = await groqRes.json();
+    const data = await safeJson(groqRes);
 
     if (!groqRes.ok) {
       const errMsg = data?.error?.message || `Groq returned HTTP ${groqRes.status}`;
@@ -113,6 +137,9 @@ exports.handler = async (event) => {
   } catch (err) {
     // Single catch-all — prevents Netlify/Cloudflare from returning an HTML 502
     console.error('[Signal] Unhandled error:', err.message);
-    return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
+    if (err.name === 'AbortError') {
+      return { statusCode: 504, headers, body: JSON.stringify({ error: 'Upstream timeout (Groq)' }) };
+    }
+    return { statusCode: 500, headers, body: JSON.stringify({ error: err.message || 'Internal error' }) };
   }
 };
